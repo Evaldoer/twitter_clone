@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Perfil</title>
+</head>
+<body>
+    <h1>Perfil do usuário</h1>
+
+    <p>Olá, {{ request.user.username }}!</p>
+
+    {% if request.user.profile.avatar %}
+        <img src="{{ request.user.profile.avatar.url }}" width="150">
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <h3>Dados do usuário</h3>
+        {{ user_form.as_p }}
+
+        <h3>Perfil</h3>
+        {{ profile_form.as_p }}
+
+        <button type="submit">Salvar alterações</button>
+    </form>
+
+    <a href="{% url 'logout' %}">Sair</a>
+</body>
+</html>

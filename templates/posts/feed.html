@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Feed</title>
+</head>
+<body>
+
+    <header>
+        <h1>Twitter Clone</h1>
+
+        {% if user.is_authenticated %}
+            <p>
+                Logado como <strong>{{ user.username }}</strong> |
+                <form method="post" action="{% url 'logout' %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">Sair</button>
+                </form>
+            </p>
+        {% else %}
+            <a href="{% url 'login' %}">Entrar</a> |
+            <a href="{% url 'register' %}">Criar conta</a>
+        {% endif %}
+    </header>
+
+    <hr>
+
+    {% if user.is_authenticated %}
+        <section>
+            <h2>Novo post</h2>
+
+            <form method="post">
+                {% csrf_token %}
+                <textarea name="content" rows="3" cols="40"
+                          placeholder="O que está acontecendo?"
+                          required></textarea>
+                <br>
+                <button type="submit">Postar</button>
+            </form>
+        </section>
+
+        <hr>
+    {% endif %}
+
+    <section>
+        <h2>Feed</h2>
+
+        {% for post in posts %}
+            <article>
+                <strong>@{{ post.user.username }}</strong><br>
+                <p>{{ post.content }}</p>
+                <small>{{ post.created_at }}</small>
+            </article>
+            <hr>
+        {% empty %}
+            <p>Nenhum post ainda.</p>
+        {% endfor %}
+    </section>
+
+</body>
+</html>

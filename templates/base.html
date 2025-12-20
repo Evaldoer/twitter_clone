@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Twitter Clone{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <header>
+        <h1>Twitter Clone</h1>
+        <nav>
+            <a href="{% url 'feed' %}">Feed</a> |
+            <a href="{% url 'profile' %}">Perfil</a> |
+            <a href="{% url 'logout' %}">Sair</a>
+        </nav>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; 2025 - Twitter Clone</p>
+    </footer>
+</body>
+</html>
