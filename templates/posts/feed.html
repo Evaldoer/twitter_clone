@@ -1,61 +1,63 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Feed</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}Feed{% endblock %}
 
-    <header>
-        <h1>Twitter Clone</h1>
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
 
-        {% if user.is_authenticated %}
-            <p>
-                Logado como <strong>{{ user.username }}</strong> |
-                <form method="post" action="{% url 'logout' %}" style="display:inline;">
-                    {% csrf_token %}
-                    <button type="submit">Sair</button>
-                </form>
-            </p>
-        {% else %}
-            <a href="{% url 'login' %}">Entrar</a> |
-            <a href="{% url 'register' %}">Criar conta</a>
-        {% endif %}
-    </header>
+    <!-- Cabeçalho -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="mb-0">Twitter Clone</h2>
+      {% if user.is_authenticated %}
+        <div>
+          <span class="me-2">Logado como <strong>{{ user.username }}</strong></span>
+          <form method="post" action="{% url 'logout' %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-outline-danger">Sair</button>
+          </form>
+        </div>
+      {% else %}
+        <div>
+          <a href="{% url 'login' %}" class="btn btn-sm btn-primary">Entrar</a>
+          <a href="{% url 'register' %}" class="btn btn-sm btn-outline-secondary">Criar conta</a>
+        </div>
+      {% endif %}
+    </div>
 
-    <hr>
-
+    <!-- Novo post -->
     {% if user.is_authenticated %}
-        <section>
-            <h2>Novo post</h2>
-
-            <form method="post">
-                {% csrf_token %}
-                <textarea name="content" rows="3" cols="40"
-                          placeholder="O que está acontecendo?"
-                          required></textarea>
-                <br>
-                <button type="submit">Postar</button>
-            </form>
-        </section>
-
-        <hr>
+      <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Novo post</h5>
+          <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+              <textarea name="content" class="form-control" rows="3" placeholder="O que está acontecendo?" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-twitter w-100">Postar</button>
+          </form>
+        </div>
+      </div>
     {% endif %}
 
-    <section>
-        <h2>Feed</h2>
-
-        {% for post in posts %}
-            <article>
-                <strong>@{{ post.user.username }}</strong><br>
-                <p>{{ post.content }}</p>
-                <small>{{ post.created_at }}</small>
-            </article>
-            <hr>
-        {% empty %}
-            <p>Nenhum post ainda.</p>
-        {% endfor %}
-    </section>
-
-</body>
-</html>
+    <!-- Feed -->
+    <h4 class="mb-3">Feed</h4>
+    {% for post in posts %}
+      <div class="card mb-3 shadow-sm">
+        <div class="card-body">
+          <div class="d-flex align-items-center mb-2">
+            {% if post.user.profile.avatar %}
+              <img src="{{ post.user.profile.avatar.url }}" class="avatar-small me-2">
+            {% endif %}
+            <strong>@{{ post.user.username }}</strong>
+            <small class="text-muted ms-2">{{ post.created_at|date:"d/m/Y H:i" }}</small>
+          </div>
+          <p class="mb-2">{{ post.content|linebreaksbr }}</p>
+        </div>
+      </div>
+    {% empty %}
+      <div class="alert alert-info">Nenhum post ainda. Crie o primeiro!</div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

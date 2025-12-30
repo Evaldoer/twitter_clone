@@ -21,6 +21,14 @@ from django.shortcuts import redirect
 from django.conf import settings
 from django.conf.urls.static import static
 
+# Import das views da API
+from social.api_views import (
+    FeedApiView,
+    PostListApiView,
+    PostDetailApiView,
+    PostCreateApiView,
+)
+
 
 def home(request):
     return redirect("feed")
@@ -36,6 +44,12 @@ urlpatterns = [
     path("accounts/", include("accounts.urls")),
     path("posts/", include("posts.urls")),
     path("social/", include("social.urls")),
+
+    # API REST
+    path("api/feed/", FeedApiView.as_view(), name="api_feed"),
+    path("api/posts/", PostListApiView.as_view(), name="api_posts"),
+    path("api/posts/<int:pk>/", PostDetailApiView.as_view(), name="api_post_detail"),
+    path("api/posts/create/", PostCreateApiView.as_view(), name="api_post_create"),
 ]
 
 # 🔥 Servir arquivos de mídia no modo DEBUG
