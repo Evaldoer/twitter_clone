@@ -29,7 +29,7 @@
       <div class="card mb-4 shadow-sm">
         <div class="card-body">
           <h5 class="card-title">Novo post</h5>
-          <form method="post">
+          <form method="post" action="{% url 'feed' %}">
             {% csrf_token %}
             <div class="mb-3">
               <textarea name="content" class="form-control" rows="3" placeholder="O que está acontecendo?" required></textarea>
@@ -52,7 +52,63 @@
             <strong>@{{ post.user.username }}</strong>
             <small class="text-muted ms-2">{{ post.created_at|date:"d/m/Y H:i" }}</small>
           </div>
+
+          <!-- Conteúdo -->
           <p class="mb-2">{{ post.content|linebreaksbr }}</p>
+
+          <!-- Ações -->
+          <div class="d-flex gap-3 mt-2">
+            <!-- Curtir -->
+            <form method="post" action="{% url 'like_toggle' post.id %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-sm btn-outline-primary">
+                👍 Curtir ({{ post.likes.count }})
+              </button>
+            </form>
+
+            <!-- Comentários -->
+            <button
+              class="btn btn-sm btn-outline-secondary"
+              data-bs-toggle="collapse"
+              data-bs-target="#c{{ post.id }}"
+            >
+              💬 Comentários ({{ post.comments.count }})
+            </button>
+          </div>
+
+          <!-- Lista de comentários -->
+          <div id="c{{ post.id }}" class="collapse mt-3">
+            <ul class="list-group list-group-flush mb-2">
+              {% for c in post.comments.all %}
+                <li class="list-group-item">
+                  <strong>@{{ c.user.username }}</strong>: {{ c.text }}
+                  <small class="text-muted d-block">
+                    {{ c.created_at|date:"d/m/Y H:i" }}
+                  </small>
+                </li>
+              {% empty %}
+                <li class="list-group-item text-muted">
+                  Nenhum comentário ainda.
+                </li>
+              {% endfor %}
+            </ul>
+
+            <!-- Formulário de comentário -->
+            <form method="post" action="{% url 'comment_create' post.id %}">
+              {% csrf_token %}
+              <div class="input-group">
+                <input
+                  name="text"
+                  class="form-control"
+                  placeholder="Adicionar comentário..."
+                  required
+                >
+                <button class="btn btn-primary btn-sm" type="submit">
+                  Enviar
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     {% empty %}
