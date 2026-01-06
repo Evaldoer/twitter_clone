@@ -12,13 +12,22 @@ SECRET_KEY = os.environ.get(
     "django-insecure-ri_(6f8+gv^3)og_07x491mjeh28y!@106)r&8(!!+ob94xmd5"
 )
 
-DEBUG = os.environ.get("DEBUG", "True") == "True"
+DEBUG = os.environ.get("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = [
     "evaldoer.pythonanywhere.com",
     "localhost",
     "127.0.0.1",
 ]
+
+# Cookies e CSRF
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_HTTPONLY = True
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = "DENY"
+SECURE_SSL_REDIRECT = True  # força HTTPS
 
 # ========================
 # APLICAÇÕES
