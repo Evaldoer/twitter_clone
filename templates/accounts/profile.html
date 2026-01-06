@@ -73,22 +73,33 @@
 <body>
     <div class="profile-card">
         <h1>Perfil do usuário</h1>
+        {% if request.user == profile_user %}
+        <p>
+            <a class="nav-link" href="{% url 'profile_edit' %}">
+                Editar Perfil
+            </a>
+        </p>
+        {% endif %}
+        <p class="username">Olá, <strong>{{ profile_user.username }}</strong>!</p>
 
-        <p class="username">Olá, <strong>{{ request.user.username }}</strong>!</p>
-
-        {% if request.user.profile.avatar %}
-            <img src="{{ request.user.profile.avatar.url }}" width="150" alt="Avatar" class="avatar">
+        {% if profile_user.profile.avatar %}
+            <img src="{{ profile_user.profile.avatar.url }}" width="150" alt="Avatar" class="avatar">
         {% else %}
             <img src="{{ MEDIA_URL }}avatars/default.jpg" width="150" alt="Avatar padrão" class="avatar">
         {% endif %}
 
-        {% if request.user.profile.bio %}
-            <p class="bio">{{ request.user.profile.bio }}</p>
+        {% if profile_user.profile.bio %}
+            <p class="bio">{{ profile_user.profile.bio }}</p>
         {% endif %}
-
+ 
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <h3>Dados do usuário</h3>
+            <ul>
+                {% if profile_user.profile.name %}
+                <li>Nome: {{ profile_user.profile.name }}</li>
+                {% endif %}
+            </ul>
             {{ user_form.as_p }}
 
             <h3>Perfil</h3>
@@ -96,7 +107,7 @@
 
             <button type="submit">Salvar alterações</button>
         </form>
-
+        
         <!-- Logout via POST -->
         <form action="{% url 'logout' %}" method="post">
             {% csrf_token %}
