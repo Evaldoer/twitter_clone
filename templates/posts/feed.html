@@ -5,59 +5,77 @@
 <div class="row justify-content-center">
   <div class="col-md-8">
 
-    <!-- Cabeçalho -->
+    <!-- ========================= -->
+    <!-- CABEÇALHO -->
+    <!-- ========================= -->
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h2 class="mb-0">Twitter Clone</h2>
+
       {% if user.is_authenticated %}
         <div>
-          <span class="me-2">Logado como <strong>{{ user.username }}</strong></span>
+          <span class="me-2">
+            Logado como <strong>@{{ user.username }}</strong>
+          </span>
+
+          <a
+            href="{% url 'profile' user.username %}"
+            class="btn btn-sm btn-outline-secondary me-2"
+          >
+            Perfil
+          </a>
+
           <form method="post" action="{% url 'logout' %}" style="display:inline;">
             {% csrf_token %}
-            <button type="submit" class="btn btn-sm btn-outline-danger">Sair</button>
+            <button type="submit" class="btn btn-sm btn-outline-danger">
+              Sair
+            </button>
           </form>
-        </div>
-      {% else %}
-        <div>
-          <a href="{% url 'login' %}" class="btn btn-sm btn-primary">Entrar</a>
-          <a href="{% url 'register' %}" class="btn btn-sm btn-outline-secondary">Criar conta</a>
         </div>
       {% endif %}
     </div>
 
-    <!-- Novo post -->
-    {% if user.is_authenticated %}
-      <div class="card mb-4 shadow-sm">
-        <div class="card-body">
-          <h5 class="card-title">Novo post</h5>
-          <form method="post" action="{% url 'feed' %}">
-            {% csrf_token %}
-            <div class="mb-3">
-              <textarea name="content" class="form-control" rows="3" placeholder="O que está acontecendo?" required></textarea>
-            </div>
-            <button type="submit" class="btn btn-twitter w-100">Postar</button>
-          </form>
-        </div>
-      </div>
-    {% endif %}
-
-    <!-- Feed -->
+    <!-- ========================= -->
+    <!-- FEED -->
+    <!-- ========================= -->
     <h4 class="mb-3">Feed</h4>
+
     {% for post in posts %}
       <div class="card mb-3 shadow-sm">
         <div class="card-body">
+
+          <!-- Autor -->
           <div class="d-flex align-items-center mb-2">
-            {% if post.user.profile.avatar %}
-              <img src="{{ post.user.profile.avatar.url }}" class="avatar-small me-2">
+            {% if post.author.profile.avatar %}
+              <img
+                src="{{ post.author.profile.avatar.url }}"
+                class="rounded-circle me-2"
+                width="40"
+                height="40"
+                alt="Avatar"
+              >
             {% endif %}
-            <strong>@{{ post.user.username }}</strong>
-            <small class="text-muted ms-2">{{ post.created_at|date:"d/m/Y H:i" }}</small>
+
+            <strong>
+              <a href="{% url 'profile' post.author.username %}">
+                @{{ post.author.username }}
+              </a>
+            </strong>
+
+            <small class="text-muted ms-2">
+              {{ post.created_at|date:"d/m/Y H:i" }}
+            </small>
           </div>
 
           <!-- Conteúdo -->
-          <p class="mb-2">{{ post.content|linebreaksbr }}</p>
+          <p class="mb-2">
+            {{ post.content|linebreaksbr }}
+          </p>
 
-          <!-- Ações -->
+          <!-- ========================= -->
+          <!-- AÇÕES -->
+          <!-- ========================= -->
           <div class="d-flex gap-3 mt-2">
+
             <!-- Curtir -->
             <form method="post" action="{% url 'like_toggle' post.id %}">
               {% csrf_token %}
@@ -76,12 +94,21 @@
             </button>
           </div>
 
-          <!-- Lista de comentários -->
+          <!-- ========================= -->
+          <!-- COMENTÁRIOS -->
+          <!-- ========================= -->
           <div id="c{{ post.id }}" class="collapse mt-3">
+
             <ul class="list-group list-group-flush mb-2">
               {% for c in post.comments.all %}
                 <li class="list-group-item">
-                  <strong>@{{ c.user.username }}</strong>: {{ c.text }}
+                  <strong>
+                    <a href="{% url 'profile' c.user.username %}">
+                      @{{ c.user.username }}
+                    </a>
+                  </strong>:
+                  {{ c.text }}
+
                   <small class="text-muted d-block">
                     {{ c.created_at|date:"d/m/Y H:i" }}
                   </small>
@@ -93,7 +120,7 @@
               {% endfor %}
             </ul>
 
-            <!-- Formulário de comentário -->
+            <!-- Criar comentário -->
             <form method="post" action="{% url 'comment_create' post.id %}">
               {% csrf_token %}
               <div class="input-group">
@@ -108,12 +135,19 @@
                 </button>
               </div>
             </form>
+
           </div>
+
         </div>
       </div>
     {% empty %}
-      <div class="alert alert-info">Nenhum post ainda. Crie o primeiro!</div>
+      <div class="alert alert-info">
+        Nenhuma postagem das pessoas que você segue.
+        <br>
+        <strong>Siga alguém para ver conteúdos aqui.</strong>
+      </div>
     {% endfor %}
+
   </div>
 </div>
 {% endblock %}

@@ -12,6 +12,9 @@ from .forms import (
     CustomPasswordChangeForm,
 )
 
+# IMPORTANTE: Follow (social app)
+from social.models import Follow
+
 
 # =========================
 # Cadastro de usuário
@@ -21,29 +24,45 @@ def register(request):
         form = RegisterForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)  # login automático após cadastro
+            login(request, user)  # login automático
             return redirect("feed")
     else:
         form = RegisterForm()
 
-    return render(request, "accounts/register.html", {"form": form})
-
-
-# =========================
-# Visualização de perfil (qualquer usuário)
-# =========================
-@login_required
-def profile_detail(request, username):
-    user_obj = get_object_or_404(User, username=username)
     return render(
         request,
-        "accounts/profile.html",
-        {"profile_user": user_obj}
+        "accounts/register.html",
+        {"form": form}
     )
 
 
 # =========================
-# Edição de perfil do usuário logado
+# Visualização de perfil
+# =========================
+@login_required
+def profile_detail(request, username):
+    profile_user = get_object_or_404(User, username=username)
+
+    # Verifica se o usuário logado segue este perfil
+    is_following = False
+    if request.user != profile_user:
+        is_following = Follow.objects.filter(
+            follower=request.user,
+            following=profile_user
+        ).exists()
+
+    return render(
+        request,
+        "accounts/profile.html",
+        {
+            "profile_user": profile_user,
+            "is_following": is_following,
+        }
+    )
+
+
+# =========================
+# Edição de perfil
 # =========================
 @login_required
 def profile_edit(request):
@@ -80,7 +99,7 @@ def profile_edit(request):
 
 
 # =========================
-# Busca de usuários (CORREÇÃO DO ERRO)
+# Busca de usuários
 # =========================
 @login_required
 def user_search(request):
@@ -88,9 +107,11 @@ def user_search(request):
 
     users = []
     if query:
-        users = User.objects.filter(
-            username__icontains=query
-        ).exclude(id=request.user.id)
+        users = (
+            User.objects
+            .filter(username__icontains=query)
+            .exclude(id=request.user.id)
+        )
 
     return render(
         request,
