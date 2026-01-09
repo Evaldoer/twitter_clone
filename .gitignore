@@ -205,3 +205,15 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+# Django
+db.sqlite3
+media/
+
+# Static files coletados
+staticfiles/
+
+# Virtualenv
+.env
+.venv
+env/
+venv/
