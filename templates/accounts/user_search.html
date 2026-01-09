@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Buscar usuários{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+
+    <h4 class="mb-4">Buscar usuários</h4>
+
+    <form method="get" class="mb-4">
+      <div class="input-group">
+        <input
+          type="text"
+          name="q"
+          class="form-control"
+          placeholder="Digite o nome de usuário..."
+          value="{{ query }}"
+        >
+        <button class="btn btn-primary" type="submit">
+          Buscar
+        </button>
+      </div>
+    </form>
+
+    {% if users %}
+      <ul class="list-group">
+        {% for user in users %}
+          <li class="list-group-item d-flex align-items-center">
+            {% if user.profile.avatar %}
+              <img
+                src="{{ user.profile.avatar.url }}"
+                class="rounded-circle me-3"
+                width="40"
+                height="40"
+              >
+            {% endif %}
+
+            <div>
+              <a href="{% url 'profile' user.username %}">
+                <strong>@{{ user.username }}</strong>
+              </a>
+              {% if user.profile.name %}
+                <div class="text-muted small">{{ user.profile.name }}</div>
+              {% endif %}
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      {% if query %}
+        <div class="alert alert-warning">
+          Nenhum usuário encontrado para "{{ query }}".
+        </div>
+      {% endif %}
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Buscar Usuários{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h4 class="mb-3">Resultados para "{{ q }}"</h4>
+        <ul class="list-group list-group-flush">
+          {% for u in results %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <div class="d-flex align-items-center">
+                {% if u.profile.avatar %}
+                  <img src="{{ u.profile.avatar.url }}" class="rounded-circle me-2" width="40" height="40">
+                {% else %}
+                  <img src="{% static 'img/default-avatar.png' %}" class="rounded-circle me-2" width="40" height="40">
+                {% endif %}
+                <div>
+                  <a href="{% url 'profile' u.username %}" class="fw-bold">@{{ u.username }}</a>
+                  {% if u.profile.name %}
+                    <small class="text-muted d-block">{{ u.profile.name }}</small>
+                  {% endif %}
+                </div>
+              </div>
+              {% if request.user != u %}
+                <a class="btn btn-sm btn-outline-primary" href="{% url 'follow_toggle' u.username %}">
+                  {% if u in request.user.following.all.values_list 'following', flat=True %}
+                    Deixar de seguir
+                  {% else %}
+                    Seguir
+                  {% endif %}
+                </a>
+              {% endif %}
+            </li>
+          {% empty %}
+            <li class="list-group-item text-muted">Nenhum usuário encontrado.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
